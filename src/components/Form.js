@@ -1,12 +1,44 @@
 import React, { useState } from "react";
+import Error from "./Error";
+import shortid from "shortid";
 
-const Form = () => {
+const Form = ({ setGasto, setCrearGasto }) => {
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState(0);
+  const [error, setError] = useState(false);
+
+  const agregarGasto = (e) => {
+    e.preventDefault();
+
+    //validar
+    if (cantidad < 1 || isNaN(cantidad) || nombre.trim() === "") {
+      setError(true);
+      return;
+    }
+    setError(false);
+
+    //construir gasto
+    const gasto = {
+      nombre,
+      cantidad,
+      id: shortid.generate(),
+    };
+
+    //pasar el gasto al componente principal
+    setGasto(gasto);
+    setCrearGasto(true);
+
+    //resetear el form
+    setNombre("");
+    setCantidad(0);
+  };
 
   return (
-    <form>
+    <form onSubmit={agregarGasto}>
       <h2> Agregar tus gastos aquí</h2>
+      {error ? (
+        <Error message="Ambos campos son obligatorios o presupuesto incorrecto" />
+      ) : null}
       <div className="campo">
         <label>Nombre Gasto</label>
         <input
